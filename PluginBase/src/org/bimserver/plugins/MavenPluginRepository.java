@@ -1,6 +1,7 @@
 package org.bimserver.plugins;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /******************************************************************************
  * Copyright (C) 2009-2019  BIMserver.org
@@ -58,11 +59,20 @@ public class MavenPluginRepository {
 	private RemoteRepository local;
 	
 	public MavenPluginRepository() {
+		this(null);
+	}
+
+	public MavenPluginRepository(Path customLocalRepository) {
 		Settings settings = loadDefaultUserSettings();
 
 		system = new RepositorySystemSupplier().get();
-		String userHome = System.getProperty("user.home");
-		File localRepository = new File(settings.getLocalRepository() == null ? userHome + "/.m2/repository" : settings.getLocalRepository());
+		File localRepository;
+		if (customLocalRepository != null) {
+			localRepository = customLocalRepository.toFile();
+		} else {
+			String userHome = System.getProperty("user.home");
+			localRepository = new File(settings.getLocalRepository() == null ? userHome + "/.m2/repository" : settings.getLocalRepository());
+		}
 		session = newRepositorySystemSession(system, localRepository, settings);
 
 		localRepositories = new ArrayList<>();

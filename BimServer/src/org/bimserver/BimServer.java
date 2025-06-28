@@ -274,7 +274,12 @@ public class BimServer implements BasicServerInfoProvider {
 				Files.createDirectory(homeDirIncoming);
 			}
 
-			mavenPluginRepository = new MavenPluginRepository();
+			Path mavenPath = config.getHomeDir().resolve("maven");
+			if (!Files.exists(mavenPath)) {
+				Files.createDirectories(mavenPath);
+			}
+
+			mavenPluginRepository = new MavenPluginRepository(mavenPath);
 			pluginManager = new PluginManager(tmp, config.getClassPath(), serviceFactory, internalServicesManager, servicesMap, this);
 			pluginBundleManager = new PluginBundleManager(pluginManager, mavenPluginRepository, config.getHomeDir().resolve("plugins"));
 			metaDataManager = new MetaDataManager(tmp);
@@ -684,11 +689,6 @@ public class BimServer implements BasicServerInfoProvider {
 			
 			pluginSettingsCache = new PluginSettingsCache(this);
 			metricsRegistry = new MetricsRegistry();
-
-			Path mavenPath = config.getHomeDir().resolve("maven");
-			if (!Files.exists(mavenPath)) {
-				Files.createDirectories(mavenPath);
-			}
 
 			OldQuery.setPackageMetaDataForDefaultQuery(metaDataManager.getPackageMetaData("store"));
 
