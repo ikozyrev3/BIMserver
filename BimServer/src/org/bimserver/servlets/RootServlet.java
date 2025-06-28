@@ -48,6 +48,7 @@ public class RootServlet extends HttpServlet {
 	private OAuthAccessTokenServlet oAuthAccesssTokenServlet;
 	private ServiceRunnerServlet serviceRunner;
 	private BulkUploadServlet bulkUploadServlet;
+	private ODataServlet oDataServlet;
 
 	private BimServer bimServer;
 
@@ -72,6 +73,7 @@ public class RootServlet extends HttpServlet {
 		oAuthAccesssTokenServlet = new OAuthAccessTokenServlet(bimServer, servletContext);
 		oAuthRegistrationServlet = new OAuthRegistrationServlet(bimServer, servletContext);
 		serviceRunner = new ServiceRunnerServlet(bimServer, servletContext);
+		oDataServlet = new ODataServlet(bimServer, servletContext);
 	}
 
 	@Override
@@ -139,6 +141,8 @@ public class RootServlet extends HttpServlet {
 				syndicationServlet.service(request, response);
 			} else if (requestUri.startsWith("/json/") || requestUri.equals("/json")) {
 				jsonApiServlet.service(request, response);
+			} else if (requestUri.startsWith("/odata/") || requestUri.equals("/odata")) {
+				oDataServlet.service(request, response);
 			} else if (requestUri.startsWith("/oauth/register")) {
 				oAuthRegistrationServlet.service(request, response);
 			} else if (requestUri.startsWith("/oauth/authorize")) {
