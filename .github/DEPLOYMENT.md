@@ -18,11 +18,11 @@ This repository includes a GitHub Actions workflow that automatically builds and
    sudo apt install tomcat9 tomcat9-admin
    
    # Ensure Tomcat service is enabled
-   sudo systemctl enable tomcat9
-   sudo systemctl start tomcat9
+   sudo systemctl enable tomcat
+   sudo systemctl start tomcat
    
    # Verify installation
-   sudo systemctl status tomcat9
+   sudo systemctl status tomcat
    ```
 
 ### GitHub Repository Secrets
@@ -65,9 +65,9 @@ The deployment user needs sudo privileges to manage Tomcat. Add the following to
 # Allow deployment user to manage Tomcat without password
 deploy_user ALL=(ALL) NOPASSWD: /bin/mv /tmp/ROOT.war /opt/tomcat9/webapps/ROOT.war
 deploy_user ALL=(ALL) NOPASSWD: /bin/chown tomcat:tomcat /opt/tomcat9/webapps/ROOT.war
-deploy_user ALL=(ALL) NOPASSWD: /bin/systemctl restart tomcat9
-deploy_user ALL=(ALL) NOPASSWD: /bin/systemctl stop tomcat9
-deploy_user ALL=(ALL) NOPASSWD: /bin/systemctl start tomcat9
+deploy_user ALL=(ALL) NOPASSWD: /bin/systemctl restart tomcat
+deploy_user ALL=(ALL) NOPASSWD: /bin/systemctl stop tomcat
+deploy_user ALL=(ALL) NOPASSWD: /bin/systemctl start tomcat
 ```
 
 Replace `deploy_user` with your actual username.
@@ -97,7 +97,7 @@ When triggered, the workflow performs these steps:
 ## Monitoring Deployments
 
 - View deployment status in the GitHub Actions tab
-- Check Tomcat logs: `sudo journalctl -u tomcat9 -f`
+- Check Tomcat logs: `sudo journalctl -u tomcat -f`
 - Verify deployment: `curl http://your-server-ip:8080`
 
 ## Troubleshooting
@@ -114,8 +114,8 @@ When triggered, the workflow performs these steps:
    - Check that deployment user has necessary permissions
 
 3. **Tomcat Restart Failed:**
-   - Check Tomcat service status: `sudo systemctl status tomcat9`
-   - Review Tomcat logs: `sudo journalctl -u tomcat9 -f`
+   - Check Tomcat service status: `sudo systemctl status tomcat`
+   - Review Tomcat logs: `sudo journalctl -u tomcat -f`
    - Ensure sufficient disk space and memory
 
 4. **Build Failed:**
@@ -130,7 +130,7 @@ If automatic deployment fails, you can manually deploy:
 # Download the artifact from GitHub Actions
 # Then copy to server:
 scp bimserverwar-*.war user@server:/tmp/ROOT.war
-ssh user@server "sudo mv /tmp/ROOT.war /opt/tomcat9/webapps/ROOT.war && sudo systemctl restart tomcat9"
+ssh user@server "sudo mv /tmp/ROOT.war /opt/tomcat9/webapps/ROOT.war && sudo systemctl restart tomcat"
 ```
 
 ## Security Considerations

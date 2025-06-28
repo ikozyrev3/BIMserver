@@ -68,7 +68,7 @@ jobs:
             "$DEPLOY_USER@$DEPLOY_HOST" \
             "sudo mv /tmp/ROOT.war /opt/tomcat9/webapps/ROOT.war && \
              sudo chown tomcat:tomcat /opt/tomcat9/webapps/ROOT.war && \
-             sudo systemctl restart tomcat9"
+             sudo systemctl restart tomcat"
 
           # Clean up
           rm deploy_key
