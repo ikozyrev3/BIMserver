@@ -79,6 +79,31 @@ mvn test -Ptest
 ```
 *Note: Integration tests require a running BIMserver instance.*
 
+## Automated Deployment (CI/CD)
+
+This repository includes GitHub Actions workflow for automated building and deployment:
+
+- **Automatic builds** triggered on push to main/master branch
+- **WAR file deployment** to `/opt/tomcat9/webapps/ROOT.war`
+- **Tomcat service management** with automatic restart
+
+### Quick Setup for Deployment
+
+1. **Prepare your server:**
+   ```bash
+   # Run the setup script on your target server
+   curl -sSL https://raw.githubusercontent.com/ikozyrev3/BIMserver/main/.github/setup-server.sh | bash
+   ```
+
+2. **Configure GitHub secrets** (see [.github/DEPLOYMENT.md](.github/DEPLOYMENT.md) for details):
+   - `DEPLOY_HOST`: Your server IP/hostname
+   - `DEPLOY_USER`: SSH username
+   - `DEPLOY_KEY`: SSH private key
+
+3. **Push to main branch** to trigger automatic deployment
+
+For detailed setup instructions, see [Deployment Documentation](.github/DEPLOYMENT.md).
+
 #### IDE Setup
 The project uses standard Maven structure and can be imported into any IDE that supports Maven projects. All modules are organized under the root directory.
 
@@ -91,6 +116,31 @@ The project uses standard Maven structure and can be imported into any IDE that 
 - `BimServerWar`: WAR packaging module
 - `BimServerJar`: Standalone JAR packaging module
 - `Tests`: Test suite
+
+## Automated Deployment (CI/CD)
+
+This repository includes GitHub Actions workflow for automated building and deployment:
+
+- **Automatic builds** triggered on push to main/master branch
+- **WAR file deployment** to `/opt/tomcat9/webapps/ROOT.war`
+- **Tomcat service management** with automatic restart
+
+### Quick Setup for Deployment
+
+1. **Prepare your server:**
+   ```bash
+   # Run the setup script on your target server
+   curl -sSL https://raw.githubusercontent.com/ikozyrev3/BIMserver/main/.github/setup-server.sh | bash
+   ```
+
+2. **Configure GitHub secrets** (see [.github/DEPLOYMENT.md](.github/DEPLOYMENT.md) for details):
+   - `DEPLOY_HOST`: Your server IP/hostname
+   - `DEPLOY_USER`: SSH username
+   - `DEPLOY_KEY`: SSH private key
+
+3. **Push to main branch** to trigger automatic deployment
+
+For detailed setup instructions, see [Deployment Documentation](.github/DEPLOYMENT.md).
 
 ## License and Copyright
 

@@ -1,0 +1,81 @@
+---
+name: Build and Deploy BIMserver
+
+"on":
+  push:
+    branches: [main, master]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+      - name: Get WAR file version
+        id: get_version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          WAR_FILE="BimServerWar/target/bimserverwar-$VERSION.war"
+          echo "war_file=$WAR_FILE" >> $GITHUB_OUTPUT
+          echo "WAR file: $WAR_FILE"
+
+      - name: Verify WAR file exists
+        run: |
+          if [ ! -f "${{ steps.get_version.outputs.war_file }}" ]; then
+            echo "WAR file not found: ${{ steps.get_version.outputs.war_file }}"
+            exit 1
+          fi
+          echo "WAR file verified: ${{ steps.get_version.outputs.war_file }}"
+          ls -la "${{ steps.get_version.outputs.war_file }}"
+
+      - name: Deploy to server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          # Create SSH key file
+          echo "$DEPLOY_KEY" > deploy_key
+          chmod 600 deploy_key
+
+          # Copy WAR file to server
+          scp -i deploy_key -o StrictHostKeyChecking=no \
+            "${{ steps.get_version.outputs.war_file }}" \
+            "$DEPLOY_USER@$DEPLOY_HOST:/tmp/ROOT.war"
+
+          # Move WAR file to Tomcat webapps and restart if needed
+          ssh -i deploy_key -o StrictHostKeyChecking=no \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "sudo mv /tmp/ROOT.war /opt/tomcat9/webapps/ROOT.war && \
+             sudo chown tomcat:tomcat /opt/tomcat9/webapps/ROOT.war && \
+             sudo systemctl restart tomcat9"
+
+          # Clean up
+          rm deploy_key
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bimserver-war
+          path: ${{ steps.get_version.outputs.war_file }}
+          retention-days: 30
