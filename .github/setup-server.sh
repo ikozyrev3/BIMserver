@@ -46,17 +46,17 @@ sudo chown -R tomcat:tomcat /var/log/tomcat9/
 
 # Enable and start Tomcat
 echo "Enabling and starting Tomcat service..."
-sudo systemctl enable tomcat9
-sudo systemctl start tomcat9
+sudo systemctl enable tomcat
+sudo systemctl start tomcat
 
 # Wait a bit for Tomcat to start
 sleep 5
 
 # Check Tomcat status
-if sudo systemctl is-active --quiet tomcat9; then
+if sudo systemctl is-active --quiet tomcat; then
     echo "✓ Tomcat 9 is running successfully"
 else
-    echo "✗ Tomcat 9 failed to start. Check logs with: sudo journalctl -u tomcat9"
+    echo "✗ Tomcat 9 failed to start. Check logs with: sudo journalctl -u tomcat"
     exit 1
 fi
 
@@ -70,10 +70,10 @@ sudo tee $SUDOERS_FILE > /dev/null <<EOF
 # BIMserver deployment permissions for user: $CURRENT_USER
 $CURRENT_USER ALL=(ALL) NOPASSWD: /bin/mv /tmp/ROOT.war /opt/tomcat9/webapps/ROOT.war
 $CURRENT_USER ALL=(ALL) NOPASSWD: /bin/chown tomcat:tomcat /opt/tomcat9/webapps/ROOT.war
-$CURRENT_USER ALL=(ALL) NOPASSWD: /bin/systemctl restart tomcat9
-$CURRENT_USER ALL=(ALL) NOPASSWD: /bin/systemctl stop tomcat9
-$CURRENT_USER ALL=(ALL) NOPASSWD: /bin/systemctl start tomcat9
-$CURRENT_USER ALL=(ALL) NOPASSWD: /bin/systemctl status tomcat9
+$CURRENT_USER ALL=(ALL) NOPASSWD: /bin/systemctl restart tomcat
+$CURRENT_USER ALL=(ALL) NOPASSWD: /bin/systemctl stop tomcat
+$CURRENT_USER ALL=(ALL) NOPASSWD: /bin/systemctl start tomcat
+$CURRENT_USER ALL=(ALL) NOPASSWD: /bin/systemctl status tomcat
 EOF
 
 echo "✓ Sudo permissions configured for user: $CURRENT_USER"
@@ -101,7 +101,7 @@ if curl -s http://localhost:$TOMCAT_PORT > /dev/null; then
     echo "Access your server at: http://$(hostname -I | awk '{print $1}'):$TOMCAT_PORT"
 else
     echo "✗ Tomcat is not responding on port $TOMCAT_PORT"
-    echo "Check logs: sudo journalctl -u tomcat9 -f"
+    echo "Check logs: sudo journalctl -u tomcat -f"
 fi
 
 echo
